@@ -27,9 +27,7 @@ public class FileClient {
 			String pics = "C:/Users/jasin/Desktop/Dist_assignment2/Server/src/pics/";
 			String name = "//" + argv[0] + "/FileServer";
 			FileInterface fi = (FileInterface) Naming.lookup(name);
-			
-			System.out.println("you are now connected to LOL Application Server");
-			System.out.println(" ");
+
 			Menu();
 
 			while (true) {
@@ -144,7 +142,7 @@ public class FileClient {
 				/**
 				 * exit if Client types "exit"
 				 */
-				if (r.equals("exit")) {	
+				if (r.equals("exit")) {
 					System.exit(0);
 				}
 

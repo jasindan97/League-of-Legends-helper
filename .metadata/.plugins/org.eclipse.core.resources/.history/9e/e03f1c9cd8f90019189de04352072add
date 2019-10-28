@@ -29,7 +29,6 @@ public class FileClient {
 			FileInterface fi = (FileInterface) Naming.lookup(name);
 			
 			System.out.println("you are now connected to LOL Application Server");
-			System.out.println(" ");
 			Menu();
 
 			while (true) {
