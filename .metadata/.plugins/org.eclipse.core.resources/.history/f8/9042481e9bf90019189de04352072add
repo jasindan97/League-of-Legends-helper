@@ -1,0 +1,156 @@
+import java.io.*;
+import java.rmi.*;
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+
+public class FileClient {
+	public static void main(String argv[]) throws IOException{
+		if (argv.length != 1) {
+			System.out.println("Usage: java FileClient fileName machineName");
+			System.exit(0);
+		}
+		try {
+			ArrayList<String> items = new ArrayList<String>(6);
+			String pics = "C:/Users/jasin/Desktop/LeagueProject/LeagueClient/src/pics/";
+			String name = "//" + argv[0] + "/FileServer";
+			FileInterface fi = (FileInterface) Naming.lookup(name);
+
+			System.out.println(" ");
+			System.out.println(" ======================================");
+			System.out.println("|         RITO GAMES ESPORTS           |");
+			System.out.println("|   LEAGUE OF LEGENDS CLIENT MENU      |");
+			System.out.println("|======================================|");
+			System.out.println("| Champion Roles Command: CHAMPROLES   |");
+			System.out.println("| Champion Build Command: CHAMPBUILD   |");
+			System.out.println("| Player History Command: PLAYERMHST   |");
+			System.out.println("| LCS Team Stats Command: NALCSTEAMS   |");
+			System.out.println(" ====================================== ");
+			System.out.println(" ");
+
+			while (true) {
+				Scanner newInput = new Scanner(System.in);
+				String r = newInput.nextLine();
+				if (r.equals("NALCSTEAMS")) {
+					System.out.println("Team Stats will be displayed below");
+					System.out.println(" ");
+					String q = fi.teamStats();
+					System.out.println(q);
+					System.out.println(" ");
+					System.out.println(" ");
+					System.out.println(" ======================================");
+					System.out.println("|         RITO GAMES ESPORTS           |");
+					System.out.println("|   LEAGUE OF LEGENDS CLIENT MENU      |");
+					System.out.println("|======================================|");
+					System.out.println("| Champion Roles Command: CHAMPROLES   |");
+					System.out.println("| Champion Build Command: CHAMPBUILD   |");
+					System.out.println("| Player History Command: PLAYERMHST   |");
+					System.out.println("| LCS Team Stats Command: NALCSTEAMS   |");
+					System.out.println(" ====================================== ");
+					System.out.println(" ");
+				}
+				if (r.equals("PLAYERMHST")) {
+					System.out.println("Enter Summoner Name");
+					String n = newInput.nextLine();
+					System.out.println("List of past matches");
+					System.out.println(" ");
+					ArrayList<String> q = fi.matchHistory(n.replace(" ", "+"));
+					System.out.println(q);
+					System.out.println(" ");
+					System.out.println(" ");
+					System.out.println(" ======================================");
+					System.out.println("|         RITO GAMES ESPORTS           |");
+					System.out.println("|   LEAGUE OF LEGENDS CLIENT MENU      |");
+					System.out.println("|======================================|");
+					System.out.println("| Champion Roles Command: CHAMPROLES   |");
+					System.out.println("| Champion Build Command: CHAMPBUILD   |");
+					System.out.println("| Player History Command: PLAYERMHST   |");
+					System.out.println("| LCS Team Stats Command: NALCSTEAMS   |");
+					System.out.println(" ====================================== ");
+					System.out.println(" ");
+				}
+
+				if (r.equals("CHAMPROLES")) {
+					System.out.println("Here is a list of all champion roles");
+					System.out.println(" ");
+					String q = fi.champRolez();
+					System.out.println(q);
+					System.out.println(" ");
+					System.out.println(" ");
+					System.out.println(" ======================================");
+					System.out.println("|         RITO GAMES ESPORTS           |");
+					System.out.println("|   LEAGUE OF LEGENDS CLIENT MENU      |");
+					System.out.println("|======================================|");
+					System.out.println("| Champion Roles Command: CHAMPROLES   |");
+					System.out.println("| Champion Build Command: CHAMPBUILD   |");
+					System.out.println("| Player History Command: PLAYERMHST   |");
+					System.out.println("| LCS Team Stats Command: NALCSTEAMS   |");
+					System.out.println(" ====================================== ");
+					System.out.println(" ");
+				}
+
+				if (r.equals("CHAMPBUILD")) {
+					System.out.println("Enter a champion name");
+					String q = newInput.nextLine();
+					ArrayList<String> s = fi.championBuildz(q, items);
+					System.out.println(" -- Here is the upto date Build for -- " + q);
+					System.out.println(" ");
+					System.out.println(s);
+					System.out.println(" ");
+					System.out.println(" ");
+					System.out.println(" ======================================");
+					System.out.println("|         RITO GAMES ESPORTS           |");
+					System.out.println("|   LEAGUE OF LEGENDS CLIENT MENU      |");
+					System.out.println("|======================================|");
+					System.out.println("| Champion Roles Command: CHAMPROLES   |");
+					System.out.println("| Champion Build Command: CHAMPBUILD   |");
+					System.out.println("| Player History Command: PLAYERMHST   |");
+					System.out.println("| LCS Team Stats Command: NALCSTEAMS   |");
+					System.out.println(" ====================================== ");
+					System.out.println(" ");
+				}
+
+				if (r.equals("champPics")) {
+					System.out.println("Enter champ name you want a picture of: ");
+					String q = newInput.nextLine();
+					
+					System.out.println("Retrievig file '" + q + "' from server.");
+					byte[] filedata = fi.downloadFile(q);
+					File file = new File(pics + q + ".jpg");
+					System.out.println("Writing file: '" + q + "'.");
+					BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(pics+ file.getName()));
+					output.write(filedata, 0, filedata.length);
+					output.flush();
+					output.close();
+					System.out.println("Successfully downloaded " + q + "'.");
+					
+			        BufferedImage image = ImageIO.read(file);
+			        JLabel label = new JLabel(new ImageIcon(image));
+			        JFrame f = new JFrame();
+			        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			        f.getContentPane().add(label);
+			        f.pack();
+			        f.setLocation(200,200);
+			        f.setVisible(true);
+				}
+
+				if (r.equals("upload")) {
+					System.out.println("Uploading file '" + argv[0] + "' to server.");
+					File file = new File(argv[0]);
+					byte[] buffer = new byte[(int) file.length()];
+					BufferedInputStream input = new BufferedInputStream(new FileInputStream(argv[0]));
+					input.read(buffer, 0, buffer.length);
+					input.close();
+					fi.uploadFile(buffer, argv[0]);
+				}
+			}
+		} catch (Exception e) {
+			System.err.println("FileServer exception: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+}
